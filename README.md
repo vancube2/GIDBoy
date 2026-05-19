@@ -76,19 +76,39 @@ curl -X POST "http://localhost:8000/task" \
 
 ## Deployment
 
-### Railway
+### Railway (Auto-Deploy on Push)
 
-[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/template)
+**One-Click Deploy:**
+
+[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/new/template?template=https://github.com/vancube2/GIDBoy)
+
+**Manual Setup:**
 
 ```bash
-# Install Railway CLI
+# 1. Install Railway CLI
 npm install -g @railway/cli
 
-# Login and deploy
+# 2. Login and create project
 railway login
 railway init
-railway up
+
+# 3. Get token for GitHub Actions
+railway token
+
+# 4. Add token to GitHub Secrets (Settings -> Secrets -> RAILWAY_TOKEN)
 ```
+
+**GitHub Actions Auto-Deploy:**
+
+The repo includes `.github/workflows/railway-deploy.yml` that automatically deploys on every push to `main`.
+
+Setup required:
+1. Go to Railway Dashboard → Project Settings → Generate Token
+2. Copy the token
+3. Go to GitHub Repo → Settings → Secrets → New repository secret
+4. Name: `RAILWAY_TOKEN`
+5. Value: Paste the token
+6. Save and push any change to trigger deploy
 
 ## Tech Stack
 

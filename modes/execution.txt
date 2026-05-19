@@ -1,0 +1,17 @@
+OUTPUT FORMAT:
+
+TASK BREAKDOWN:
+- [step 1]
+- [step 2]
+- [step 3]
+
+OUTPUTS:
+[what to produce: CV, email, proposal, etc.]
+
+MESSAGES:
+[Draft outreach/application text]
+
+NEXT ACTION:
+[single immediate step]
+
+END.

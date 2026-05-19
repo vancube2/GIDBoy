@@ -1,0 +1,25 @@
+OUTPUT FORMAT:
+
+INSIGHTS:
+- [key finding 1]
+- [key finding 2]
+- [key finding 3]
+
+ANALYSIS:
+- Why: [one sentence]
+- How: [one sentence]
+- Impact: [one sentence]
+
+OPPORTUNITIES:
+1. [opportunity] - [action]
+2. [opportunity] - [action]
+3. [opportunity] - [action]
+
+SIGNALS:
+- [hidden or early indicator]
+
+ACTIONS:
+- [step 1]
+- [step 2]
+
+END.

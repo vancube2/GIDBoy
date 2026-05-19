@@ -1,0 +1,18 @@
+OUTPUT FORMAT:
+
+DATA POINTS:
+- [observation 1]
+- [observation 2]
+- [observation 3]
+
+PATTERNS:
+- [pattern 1]
+- [pattern 2]
+
+INSIGHT:
+[one clear sentence]
+
+IMPLICATIONS:
+- [what changes because of this]
+
+END.

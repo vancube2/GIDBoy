@@ -1,0 +1,24 @@
+OUTPUT FORMAT:
+
+MATCHED ROLES:
+1. [role title] at [company/protocol]
+   - Fit: [strengths alignment]
+   - Gap: [what's missing]
+
+2. [role title] at [company/protocol]
+   - Fit: [strengths alignment]
+   - Gap: [what's missing]
+
+3. [role title] at [company/protocol]
+   - Fit: [strengths alignment]
+   - Gap: [what's missing]
+
+POSITIONING:
+[how to present yourself for these roles]
+
+ACTIONS:
+- [step 1]
+- [step 2]
+- [step 3]
+
+END.

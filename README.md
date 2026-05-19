@@ -1,6 +1,10 @@
 # GIDBoy
 
-Autonomous crypto research and opportunity intelligence agent.
+**Autonomous crypto research and opportunity intelligence agent.**
+
+A complete product with CLI, API, and web interface. GIDBoy helps researchers, developers, and analysts find opportunities, detect signals, and execute tasks in the crypto space.
+
+🌐 **Live Demo**: [vancube2.github.io/GIDBoy](https://vancube2.github.io/GIDBoy)
 
 ## Features
 
@@ -8,114 +12,108 @@ Autonomous crypto research and opportunity intelligence agent.
 - **Smart Routing**: Automatic mode detection based on query intent
 - **Persistent Memory**: Remembers past research and patterns
 - **Dual Targeting**: Opportunities for both crypto-native and traditional researchers
+- **Web UI**: Modern chat interface with mode selector and history
+- **CLI**: Terminal-based interface for power users
+- **API**: RESTful endpoints for integration
 
-## Quick Start
+## Try It Now
 
-### Local (with Ollama)
+### Web Interface (Recommended)
+
+Visit the live demo: **https://vancube2.github.io/GIDBoy**
+
+Or run locally:
 
 ```bash
-# 1. Install Ollama: https://ollama.ai
-# 2. Pull a model
-ollama pull deepseek-r1
+npm install
+npm run dev
+# Open http://localhost:3000
+```
 
-# 3. Install Python deps
+### CLI (Terminal)
+
+```bash
+# Install dependencies
 pip install -r requirements.txt
 
-# 4. Run
+# Run in demo mode (no Ollama required)
+python main.py
+
+# Or with Ollama
+ollama pull deepseek-r1
 python main.py
 ```
 
-### Demo Mode (no Ollama required)
+## Usage Examples
 
-```bash
-set GIDBOY_DEMO=1  # Windows
-export GIDBOY_DEMO=1  # Mac/Linux
+| Mode | Example Query | Output |
+|------|-------------|--------|
+| **RESEARCH** | "research solana L2 landscape" | Structured analysis with insights, opportunities, actions |
+| **OPPORTUNITY** | "find grants for researchers" | Jobs, grants, fellowships (crypto + non-crypto) |
+| **SIGNAL** | "detect new DeFi trends" | Early signals and emerging narratives |
+| **ANALYSIS** | "analyze solana fee trends" | Data-driven pattern analysis |
+| **CONTENT** | "write thread about firedancer" | X threads, LinkedIn posts |
+| **CAREER** | "career advice for researchers" | Role matching and positioning |
+| **EXECUTION** | "draft outreach email" | Task breakdown and templates |
 
-python main.py
+## Project Structure
+
 ```
-
-## Usage
-
+gidboy/
+├── src/                    # Next.js frontend source
+│   └── app/
+│       ├── page.tsx       # Main chat interface
+│       ├── layout.tsx     # Root layout
+│       └── globals.css    # Dark theme styles
+├── main.py                # CLI entry point
+├── api.py                 # FastAPI server
+├── router.py              # Mode detection logic
+├── ollama_client.py       # LLM integration
+├── memory.py              # Persistent storage
+├── modes/                 # Mode prompt templates
+│   ├── research.txt
+│   ├── opportunity.txt
+│   ├── signal.txt
+│   ├── analysis.txt
+│   ├── content.txt
+│   ├── career.txt
+│   └── execution.txt
+└── .github/workflows/     # Auto-deployment
+    ├── deploy-ui.yml      # GitHub Pages
+    └── railway-deploy.yml # Railway backend
 ```
-> research solana L2 landscape
-> /OPPORTUNITY find grants for researchers
-> detect new DeFi trends
-> /SIGNAL what's trending in crypto
-> /EXECUTION draft outreach email
-> /quit
-```
-
-## API
-
-Start the FastAPI server:
-
-```bash
-pip install fastapi uvicorn
-python api.py
-```
-
-Then POST to `/task`:
-
-```bash
-curl -X POST "http://localhost:8000/task" \
-  -H "Content-Type: application/json" \
-  -d '{"query": "research solana ecosystem"}'
-```
-
-## Modes
-
-| Mode | Purpose | Example |
-|------|---------|---------|
-| RESEARCH | Crypto topic analysis | "research solana validator landscape" |
-| OPPORTUNITY | Jobs/grants/fellowships | "find researcher grants" |
-| SIGNAL | Early trend detection | "detect new DeFi narratives" |
-| ANALYSIS | Data pattern analysis | "analyze solana fee trends" |
-| CONTENT | Social media creation | "write thread about firedancer" |
-| CAREER | Role matching | "career advice for researchers" |
-| EXECUTION | Task completion | "draft email to investor" |
 
 ## Deployment
 
-### Railway (Auto-Deploy on Push)
+### Frontend (GitHub Pages)
 
-**One-Click Deploy:**
+The web UI auto-deploys to GitHub Pages on every push to `main`.
+
+**Live URL**: `https://vancube2.github.io/GIDBoy`
+
+### Backend (Railway)
+
+Deploy the API to Railway:
 
 [![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/new/template?template=https://github.com/vancube2/GIDBoy)
 
-**Manual Setup:**
+Or manually:
 
 ```bash
-# 1. Install Railway CLI
-npm install -g @railway/cli
-
-# 2. Login and create project
 railway login
 railway init
-
-# 3. Get token for GitHub Actions
-railway token
-
-# 4. Add token to GitHub Secrets (Settings -> Secrets -> RAILWAY_TOKEN)
+railway up
 ```
-
-**GitHub Actions Auto-Deploy:**
-
-The repo includes `.github/workflows/railway-deploy.yml` that automatically deploys on every push to `main`.
-
-Setup required:
-1. Go to Railway Dashboard → Project Settings → Generate Token
-2. Copy the token
-3. Go to GitHub Repo → Settings → Secrets → New repository secret
-4. Name: `RAILWAY_TOKEN`
-5. Value: Paste the token
-6. Save and push any change to trigger deploy
 
 ## Tech Stack
 
-- Python 3.10+
-- Ollama (local LLM inference)
-- JSON-based memory (ChromaDB optional)
-- FastAPI (API layer)
+| Layer | Technology |
+|-------|-----------|
+| Frontend | Next.js 16, TypeScript, Tailwind CSS |
+| Backend | Python, FastAPI |
+| AI | Ollama (local), Demo mode (fallback) |
+| Memory | JSON-based persistence |
+| Deployment | GitHub Pages (UI), Railway (API) |
 
 ## License
 

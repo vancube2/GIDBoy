@@ -30,3 +30,12 @@ Thumbs.db
 
 # Logs
 *.log
+
+# Next.js / Node
+node_modules/
+.next/
+gidboy-ui/
+
+# Build
+dist/
+build/

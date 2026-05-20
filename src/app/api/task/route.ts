@@ -338,8 +338,13 @@ function fallbackResponse(query: string, mode: string | undefined, session: Sess
     };
   }
 
+  // Check for transition words (continuation)
+  const hasTransitionWords = /^(first|next|then|now|okay|ok|so|alright)[,\s]+/i.test(query_lower) ||
+    /\b(go deeper|elaborate|tell me more|expand on|continue|proceed)\b/i.test(query_lower);
+
   // If we have an active topic but unclear intent, try to continue
   if (session.activeTopic && hasTransitionWords) {
+    console.log('[GIDBoy] Continuing due to transition words');
     return {
       mode: 'research',
       result: `Continuing with ${session.activeTopic}. What specific aspect would you like to explore?`,
@@ -448,7 +453,8 @@ function checkContinuation(query_lower: string, session: SessionState) {
   // ==== Also check if query is about the same domain (crypto/blockchain) ====
   const cryptoKeywords = ['liquidity', 'solana', 'ethereum', 'bitcoin', 'defi', 'protocol', 'token', 'staking', 'validator', 'blockchain', 'crypto'];
   const hasCryptoContext = cryptoKeywords.some(kw => query_lower.includes(kw));
-  const topicHasCrypto = cryptoKeywords.some(kw => session.activeTopic.toLowerCase().includes(kw));
+  const activeTopicLower = session.activeTopic?.toLowerCase() || '';
+  const topicHasCrypto = cryptoKeywords.some(kw => activeTopicLower.includes(kw));
   const isSameDomain = hasCryptoContext && topicHasCrypto;
 
   console.log('[GIDBoy] isSameDomain:', isSameDomain, '| hasCryptoContext:', hasCryptoContext);

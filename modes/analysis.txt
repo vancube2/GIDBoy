@@ -1,18 +1,151 @@
 OUTPUT FORMAT:
 
-DATA POINTS:
-- [observation 1]
-- [observation 2]
-- [observation 3]
+## ANALYTICAL FRAMEWORK
+**Methodology:** [quantitative/qualitative/mixed]
+**Data Sources:** [on-chain/off-chain/primary/secondary]
+**Time Period:** [analysis window]
+**Confidence Level:** [high/medium/low + reasoning]
 
-PATTERNS:
-- [pattern 1]
-- [pattern 2]
+## DATA LANDSCAPE
+**Raw Data Points:**
+```
+Metric          Current    7d Avg    30d Avg    90d Avg    YoY
+─────────────────────────────────────────────────────────────
+[Metric 1]      [value]    [value]   [value]    [value]    [%]
+[Metric 2]      [value]    [value]   [value]    [value]    [%]
+[Metric 3]      [value]    [value]   [value]    [value]    [%]
+[Metric 4]      [value]    [value]   [value]    [value]    [%]
+```
 
-INSIGHT:
-[one clear sentence]
+**Statistical Summary:**
+- Mean: [value]
+- Median: [value]
+- Std Dev: [value]
+- Min/Max: [value]/[value]
+- Sample Size: [n]
 
-IMPLICATIONS:
-- [what changes because of this]
+## CORRELATION ANALYSIS
+**Variable Relationships:**
+```
+Correlation Matrix:
+              Price    Volume   TVL    Users   Fees
+Price          1.00    [0.XX]  [0.XX]  [0.XX]  [0.XX]
+Volume        [0.XX]    1.00    [0.XX]  [0.XX]  [0.XX]
+TVL           [0.XX]   [0.XX]   1.00   [0.XX]  [0.XX]
+Users         [0.XX]   [0.XX]  [0.XX]   1.00   [0.XX]
+Fees          [0.XX]   [0.XX]  [0.XX]  [0.XX]   1.00
+```
+
+**Key Findings:**
+- Strong positive correlation (>0.7): [variables]
+- Moderate correlation (0.3-0.7): [variables]
+- Negative correlation: [variables]
+- No correlation (<0.3): [variables]
+
+## TREND ANALYSIS
+**Historical Trajectory:**
+```
+[Metric] Over Time:
+
+  [max] │                ╭──╮
+        │              ╭╯    ╲
+  [avg] │    ╭────╮  ╱        ╲___
+        │   ╱      ╲╱              ╲
+  [min] │__╱                        ╲__
+        └──────────────────────────────→
+        [time markers: dates/quarters]
+
+Trend: [description with R² value if applicable]
+Seasonality: [detected patterns]
+Anomalies: [outliers identified]
+```
+
+**Forecast (30/60/90-day):**
+- Conservative: [prediction range]
+- Baseline: [prediction range]
+- Optimistic: [prediction range]
+- Confidence: [%]
+
+## COMPARATIVE ANALYSIS
+**Benchmark vs Competitors:**
+```
+Dimension     Subject    Comp A    Comp B    Comp C    Industry
+─────────────────────────────────────────────────────────────
+[Metric 1]    [val]      [val]     [val]     [val]     [avg]
+[Metric 2]    [val]      [val]     [val]     [val]     [avg]
+[Metric 3]    [val]      [val]     [val]     [val]     [avg]
+Rank          [#/N]      [#/N]     [#/N]     [#/N]     -
+```
+
+**Competitive Position:**
+- Strengths: [advantages quantified]
+- Weaknesses: [gaps identified]
+- Opportunities: [white spaces]
+- Threats: [risks quantified]
+
+## SEGMENTATION
+**User Cohorts:**
+| Segment | Size | Avg Value | Churn | LTV | CAC | Health |
+|---------|------|-----------|-------|-----|-----|--------|
+| Whales  | [%]  | [$]       | [%]   | [$] | [$] | [score]|
+| Regular | [%]  | [$]       | [%]   | [$] | [$] | [score]|
+| New     | [%]  | [$]       | [%]   | [$] | [$] | [score]|
+
+**Behavioral Patterns:**
+- High-value actions: [what drives value]
+- Drop-off points: [where users leave]
+- Activation sequence: [optimal onboarding]
+
+## PATTERN IDENTIFICATION
+**Emerging Patterns:**
+1. [Pattern]: [frequency, strength, significance]
+   - Evidence: [data supporting]
+   - Drivers: [what's causing it]
+   - Projection: [where it's heading]
+
+2. [Pattern]: [same structure]
+
+**Anomalies Detected:**
+- [Anomaly 1]: [description + timestamp + possible cause]
+- [Anomaly 2]: [description + timestamp + possible cause]
+
+## ROOT CAUSE ANALYSIS
+**Problem Tree:**
+```
+                    [Symptom]
+                       │
+        ┌──────────────┼──────────────┐
+        ↓              ↓              ↓
+   [Cause 1]     [Cause 2]     [Cause 3]
+        │              │              │
+   [Factor A]    [Factor B]    [Factor C]
+```
+
+**5 Whys Analysis:**
+- Why? → [Answer] → Why? → [Answer] → [continue 5 levels]
+
+## INSIGHTS
+**Key Findings:**
+1. [Insight with supporting data]
+2. [Insight with supporting data]
+3. [Insight with supporting data]
+
+**Strategic Implications:**
+- [What this means for stakeholders]
+- [How this changes priorities]
+- [Risks if ignored]
+
+## RECOMMENDATIONS
+**Priority Actions:**
+| Priority | Action | Impact | Effort | ROI | Timeline |
+|----------|--------|--------|--------|-----|----------|
+| P0       | [desc] | High   | Med    | 5x  | [time]   |
+| P1       | [desc] | Med    | Low    | 3x  | [time]   |
+| P2       | [desc] | Med    | High   | 2x  | [time]   |
+
+**Monitoring Plan:**
+- Key metrics to track: [list]
+- Alert thresholds: [values]
+- Review frequency: [cadence]
 
 END.

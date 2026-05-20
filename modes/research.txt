@@ -1,25 +1,136 @@
 OUTPUT FORMAT:
 
-INSIGHTS:
-- [key finding 1]
-- [key finding 2]
-- [key finding 3]
+## EXECUTIVE SUMMARY
+[2-3 sentence overview of findings]
 
-ANALYSIS:
-- Why: [one sentence]
-- How: [one sentence]
-- Impact: [one sentence]
+## PROBLEM IDENTIFICATION
+**Current State:**
+- [Problem 1: description + evidence]
+- [Problem 2: description + evidence]
+- [Problem 3: description + evidence]
 
-OPPORTUNITIES:
-1. [opportunity] - [action]
-2. [opportunity] - [action]
-3. [opportunity] - [action]
+**Root Cause Analysis:**
+- Surface: [visible symptoms]
+- Deep: [underlying mechanisms]
+- Systemic: [structural/contextual factors]
 
-SIGNALS:
-- [hidden or early indicator]
+## DATA & EVIDENCE
+**Key Metrics:**
+| Metric | Value | Trend | Source |
+|--------|-------|-------|--------|
+| [metric 1] | [value] | [↑/↓] | [source] |
+| [metric 2] | [value] | [↑/↓] | [source] |
+| [metric 3] | [value] | [↑/↓] | [source] |
 
-ACTIONS:
-- [step 1]
-- [step 2]
+**Data Points:**
+- [Quantitative finding with numbers]
+- [Comparative analysis vs competitors/peers]
+- [Historical trajectory over time]
+
+## WORKFLOW ANALYSIS
+**Current Process Flow:**
+```
+[Step 1] → [Step 2] → [Step 3]
+   ↓           ↓           ↓
+[Issue]    [Issue]     [Bottleneck]
+```
+
+**Inefficiencies Identified:**
+1. [Bottleneck description + impact]
+2. [Redundancy/duplication found]
+3. [Missing automation/integration]
+
+## VISUAL FRAMEWORK
+**Market Map:**
+```
+[Leader] ←→ [Challenger] ←→ [Emerging]
+   ↑              ↑              ↑
+[Metrics]    [Differentiators]  [Risks]
+```
+
+**Trend Visualization (ASCII):**
+```
+Volume
+  │    ╭──────╮
+  │   ╱        ╲
+  │  ╱          ╲____
+  │_╱                ╲___
+  └──────────────────────→ Time
+     2023   2024   2025
+```
+
+## DEEP ANALYSIS
+**Why It Matters:**
+- [Stakeholder impact analysis]
+- [Economic/technical significance]
+- [Ripple effects across ecosystem]
+
+**How It Works:**
+- [Mechanism explanation]
+- [Technical architecture]
+- [Incentive structures]
+
+**Ecosystem Impact:**
+- [Upstream effects]
+- [Downstream consequences]
+- [Cross-chain/external implications]
+
+## OPPORTUNITIES IDENTIFIED
+1. **[Opportunity Name]**
+   - Size: [TAM/SAM/SOM estimates]
+   - Timing: [Window analysis]
+   - Difficulty: [1-10 rating]
+   - Resources needed: [capital/time/skills]
+   - Action: [specific next step]
+
+2. **[Opportunity Name]**
+   - [same structure]
+
+3. **[Opportunity Name]**
+   - [same structure]
+
+## SOLUTIONS PROPOSED
+**Solution 1: [Name]**
+- Problem addressed: [which issue from above]
+- Approach: [methodology]
+- Implementation: [step-by-step]
+- Resources: [what's needed]
+- Timeline: [estimated duration]
+- Success metrics: [KPIs]
+- Risks: [mitigation strategies]
+
+**Solution 2: [Name]**
+- [same structure]
+
+**Solution 3: [Name]**
+- [same structure]
+
+## ACTIONABLE ROADMAP
+**Immediate (0-7 days):**
+- [Action 1]
+- [Action 2]
+
+**Short-term (1-4 weeks):**
+- [Action 1]
+- [Action 2]
+
+**Medium-term (1-3 months):**
+- [Action 1]
+- [Action 2]
+
+## SIGNALS & INDICATORS
+**Early Warning Signs:**
+- [Metric to watch]
+- [Event to monitor]
+- [Pattern that precedes shifts]
+
+**Success Indicators:**
+- [Observable metric confirming progress]
+- [Milestone to validate hypothesis]
+
+## REFERENCES & SOURCES
+- [Primary source 1]
+- [Primary source 2]
+- [Data source 3]
 
 END.

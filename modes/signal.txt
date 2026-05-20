@@ -1,17 +1,160 @@
 OUTPUT FORMAT:
 
-SIGNALS:
-1. [emerging trend or anomaly]
-2. [emerging trend or anomaly]
-3. [emerging trend or anomaly]
+## SIGNAL OVERVIEW
+**Signal Strength:** [1-10] / **Urgency:** [1-10] / **Confidence:** [%]
+**Detection Date:** [when first observed] / **Maturity:** [early/emerging/peak]
+**Category:** [narrative/technical/regulatory/market/technological]
 
-WHY IT MATTERS:
-- [reason 1]
-- [reason 2]
+## EARLY SIGNALS DETECTED
+**Primary Signals:**
+1. **[Signal Name]** — Strength: [high/med/low]
+   - Indicator: [what was observed]
+   - Source: [where detected]
+   - Velocity: [how fast it's growing/spreading]
+   - Precedent: [historical parallel]
 
-EARLY OPPORTUNITIES:
-1. [opportunity]
-2. [opportunity]
-3. [opportunity]
+2. **[Signal Name]** — Strength: [high/med/low]
+   - [same structure]
+
+**Supporting Evidence:**
+```
+Signal Timeline:
+Day -30: [earliest indicator]
+Day -14: [confirming signal]
+Day -7:  [acceleration point]
+Day 0:   [current state]
+Day +7:  [projected milestone]
+```
+
+**Leading Indicators:**
+| Indicator | Current | Change | Threshold | Status |
+|-----------|---------|--------|-----------|--------|
+| [Metric]  | [value] | [+/-%] | [value]   | [⚠️/✅/❌] |
+| [Metric]  | [value] | [+/-%] | [value]   | [⚠️/✅/❌] |
+
+## ANOMALY DETECTION
+**Statistical Anomalies:**
+- [Metric]: [Z-score] σ above/below mean
+- [Metric]: [percentile] percentile vs historical
+- [Event]: [rarity description]
+
+**Behavioral Shifts:**
+- From: [previous pattern]
+- To: [new pattern]
+- Delta: [magnitude of change]
+- Significance: [p-value if applicable]
+
+## MARKET DYNAMICS
+**Adoption Curve Position:**
+```
+Innovators → Early Adopters → Early Majority → Late Majority → Laggards
+    │              ★               │               │             │
+   [n%]         [current]          [n%]          [n%]          [n%]
+
+We're here → [evidence]
+```
+
+**Network Effects:**
+- Metcalfe's Law: [users² correlation]
+- Critical mass: [% reached]
+- Viral coefficient: [K-factor]
+- Churn vs Growth: [ratio]
+
+**Stakeholder Map:**
+```
+         [Influencers]
+              │
+              ↓
+[Investors] ← [Core] → [Builders]
+              ↑
+         [Users/Community]
+```
+
+## WHY IT MATTERS
+**First-Order Effects:**
+- [Direct impact on sector/protocol]
+- [Immediate market response]
+- [User behavior changes]
+
+**Second-Order Effects:**
+- [Impact on adjacent sectors]
+- [Competitive responses]
+- [Infrastructure demands]
+
+**Third-Order Effects:**
+- [Long-term industry restructuring]
+- [Regulatory attention]
+- [Paradigm shifts]
+
+**Historical Parallels:**
+| Event | Similarity | Timeline | Outcome |
+|-------|------------|----------|---------|
+| [Past] | [%] | [duration] | [result] |
+| [Past] | [%] | [duration] | [result] |
+
+## EARLY OPPORTUNITIES
+**Tactical (0-30 days):**
+1. **[Opportunity]**
+   - Entry: [how to participate]
+   - Size: [potential]
+   - Risk: [level + mitigation]
+   - Time decay: [urgency]
+   - Action: [specific step]
+
+**Strategic (1-6 months):**
+2. **[Opportunity]**
+   - [same structure]
+
+**Transformational (6-12 months):**
+3. **[Opportunity]**
+   - [same structure]
+
+## RISK ASSESSMENT
+**Risks:**
+| Risk | Probability | Impact | Mitigation |
+|------|-------------|--------|------------|
+| [Risk 1] | [%] | [high/med/low] | [strategy] |
+| [Risk 2] | [%] | [high/med/low] | [strategy] |
+
+**Warning Signs (Reversal Indicators):**
+- [Metric]: [threshold] → [action if crossed]
+- [Event]: [description] → [action if occurs]
+
+## FORECAST
+**Scenario Planning:**
+
+**Bull Case (30% probability):**
+- Triggers: [what causes this]
+- Trajectory: [growth path]
+- Timeline: [key milestones]
+- Outcome: [end state]
+
+**Base Case (50% probability):**
+- [same structure]
+
+**Bear Case (20% probability):**
+- [same structure]
+
+**Key Decision Points:**
+```
+Now ──→ [Milestone 1] ──→ [Milestone 2] ──→ [Outcome]
+        [date/action]      [date/action]      [result]
+          ↓                    ↓                 ↓
+      [decision]          [decision]       [final state]
+```
+
+## ACTION PLAN
+**Immediate Actions (This Week):**
+1. [Action with owner and deadline]
+2. [Action with owner and deadline]
+
+**Setup Actions (This Month):**
+1. [Action]
+2. [Action]
+
+**Monitoring Dashboard:**
+- Track: [metrics]
+- Alert when: [conditions]
+- Review: [cadence]
 
 END.

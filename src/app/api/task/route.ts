@@ -62,11 +62,19 @@ function fallbackResponse(query: string, mode?: string) {
   // Intent classification patterns
   const isGreeting = /^(hi|hello|hey|yo|hiya|greetings|what's up|howdy|sup)[\s!.,]*$/i.test(query_lower);
 
-  const isCasual = /\b(how are you|how's it going|what are you up to|thanks|thank you|appreciate it|nice|cool|awesome|great|tell me about yourself)\b/i.test(query_lower);
+  const isCasual = /\b(how are you|how's it going|what are you up to|thanks|thank you|appreciate it|nice|cool|awesome|great|tell me about yourself|ready when you are|what are you thinking about)\b/i.test(query_lower);
 
   const isCollaboration = /\b(work together|collaborate|partner|join forces|can we work|help with|assist with|looking for help)\b/i.test(query_lower);
 
-  const isResearch = /\b(research|investigate|analyze|study|examine|deep dive|comprehensive study|what is|how does|why does|validator economics|tokenomics|ecosystem analysis|market research|landscape|overview|assessment|evaluation of|compare|contrast|versus|vs)\b.*\b(on|into|about|with|and)\b/i.test(query_lower);
+  // ENHANCED: More flexible research detection
+  const isResearch =
+    /\b(deep dive|deep analysis|comprehensive study|in-depth analysis|research|investigate|investigation)\b/i.test(query_lower) ||
+    /\b(analyze|analysis|study|examine|assessment|evaluation)\b.*\b(on|into|about|of)\b/i.test(query_lower) ||
+    /\b(what is|how does|why does|how do|what are)\b.*\b(work|function|mechanism|ecosystem|problems|challenges|issues)\b/i.test(query_lower) ||
+    /\b(validator economics|tokenomics|ecosystem analysis|market research|liquidity provision|defi)\b/i.test(query_lower) ||
+    /\b(landscape|overview) of\b/i.test(query_lower) ||
+    /\b(compare|contrast|versus|vs)\b.*\b(with|and|to)\b/i.test(query_lower) ||
+    /\b(problems?|challenges?|issues?)\b.*\b(with|in|on)\b/i.test(query_lower);
 
   const isOpportunity = /\b(find|search|looking for)\b.*\b(grants?|jobs?|funding|opportunities?|bounties?|fellowship|stipend|position|role)\b/i.test(query_lower);
 

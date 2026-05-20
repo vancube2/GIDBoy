@@ -117,11 +117,12 @@ class IntentClassifier:
         # RESEARCH_REQUEST patterns - ONLY trigger if clear research intent
         research_patterns = [
             r'\b(research|investigate|analyze|study|examine)\b.*\b(on|into|about)\b',
-            r'\b(deep dive|deep analysis|comprehensive study)\b',
-            r'\b(what is|how does|why does)\b.*\b(work|function|mechanism|ecosystem)\b',
-            r'\b(validator economics|tokenomics|ecosystem analysis|market research)\b',
+            r'\b(deep dive|deep analysis|comprehensive study|in-depth analysis)\b',
+            r'\b(what is|how does|why does|how do|what are)\b.*\b(work|function|mechanism|ecosystem|problems|challenges|issues)\b',
+            r'\b(validator economics|tokenomics|ecosystem analysis|market research|liquidity provision|defi)\b',
             r'\b(landscape|overview|assessment|evaluation) of\b',
             r'\b(compare|contrast|versus|vs)\b.*\b(with|and)\b',
+            r'\b(problems?|challenges?|issues?)\b.*\b(with|in|on)\b',
         ]
         for pattern in research_patterns:
             if re.search(pattern, text, re.IGNORECASE):

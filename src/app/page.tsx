@@ -221,6 +221,11 @@ const FormattedContent = ({ content }: { content: string }) => {
   return <>{elements}</>;
 };
 
+// Move this outside component to avoid temporal dead zone
+const generateSessionId = (): string => {
+  return 'sess_' + Math.random().toString(36).substring(2, 15);
+};
+
 export default function Home() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
@@ -302,10 +307,6 @@ export default function Home() {
     if (q.includes("career") || q.includes("resume")) return "CAREER";
     if (q.includes("apply") || q.includes("email") || q.includes("draft")) return "EXECUTION";
     return "RESEARCH";
-  };
-
-  const generateSessionId = (): string => {
-    return 'sess_' + Math.random().toString(36).substring(2, 15);
   };
 
   const generateResponse = async (query: string, mode: string): Promise<{ response: string; activeTopic?: string; workflowStage?: string }> => {

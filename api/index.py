@@ -88,6 +88,96 @@ def health():
         "mode": "session_aware"
     }
 
+@app.get("/debug")
+def debug():
+    """Self-diagnostic endpoint that tests all core systems."""
+    diagnostics = {
+        "version": "5.1.0",
+        "imports": {},
+        "session_manager": {},
+        "classifier": {},
+        "reasoning_engine": {},
+        "llm_client": {},
+        "environment": {
+            "GROQ_API_KEY_SET": bool(os.environ.get("GROQ_API_KEY")),
+            "USE_OLLAMA": os.environ.get("USE_OLLAMA", "0"),
+            "OLLAMA_URL": os.environ.get("OLLAMA_URL", "not set"),
+            "SESSION_PERSIST_DIR": os.environ.get("SESSION_PERSIST_DIR", "not set"),
+            "MEMORY_PATH": os.environ.get("MEMORY_PATH", "not set"),
+        }
+    }
+
+    # Test imports
+    try:
+        from core.session_manager import SessionManager
+        diagnostics["imports"]["session_manager"] = "OK"
+    except Exception as e:
+        diagnostics["imports"]["session_manager"] = f"FAIL: {e}"
+
+    try:
+        from core.intent_classifier_v2 import SessionAwareIntentClassifier, IntentType
+        diagnostics["imports"]["intent_classifier"] = "OK"
+    except Exception as e:
+        diagnostics["imports"]["intent_classifier"] = f"FAIL: {e}"
+
+    try:
+        from core.collaborative_engine import CollaborativeReasoningEngine
+        diagnostics["imports"]["collaborative_engine"] = "OK"
+    except Exception as e:
+        diagnostics["imports"]["collaborative_engine"] = f"FAIL: {e}"
+
+    try:
+        from llm_client import call_llm_api
+        diagnostics["imports"]["llm_client"] = "OK"
+    except Exception as e:
+        diagnostics["imports"]["llm_client"] = f"FAIL: {e}"
+
+    try:
+        from prompts import SYSTEM_PROMPT, MODES
+        diagnostics["imports"]["prompts"] = "OK"
+        diagnostics["prompts"] = {
+            "system_prompt_length": len(SYSTEM_PROMPT),
+            "modes_loaded": list(MODES.keys())
+        }
+    except Exception as e:
+        diagnostics["imports"]["prompts"] = f"FAIL: {e}"
+
+    # Test session manager
+    try:
+        from core.session_manager import session_manager
+        session = session_manager.get_or_create_session()
+        diagnostics["session_manager"]["create_session"] = "OK"
+        diagnostics["session_manager"]["session_id"] = session.session_id
+        diagnostics["session_manager"]["has_hydrate"] = hasattr(session_manager, "hydrate_session")
+        state = session_manager.get_session_summary(session.session_id)
+        diagnostics["session_manager"]["summary_keys"] = list(state.keys())
+    except Exception as e:
+        diagnostics["session_manager"]["error"] = f"{type(e).__name__}: {e}"
+
+    # Test classifier
+    try:
+        from core.intent_classifier_v2 import SessionAwareIntentClassifier
+        c = SessionAwareIntentClassifier()
+        r = c.classify("research solana defi", [], {})
+        diagnostics["classifier"]["test_research"] = r.intent.value
+        r2 = c.classify("hi there", [], {})
+        diagnostics["classifier"]["test_greeting"] = r2.intent.value
+    except Exception as e:
+        diagnostics["classifier"]["error"] = f"{type(e).__name__}: {e}"
+
+    # Test reasoning engine
+    try:
+        from core.collaborative_engine import CollaborativeReasoningEngine
+        from llm_client import call_llm_api
+        engine = CollaborativeReasoningEngine(llm_client=call_llm_api)
+        result = engine.collaborate("test topic", memory_context="")
+        diagnostics["reasoning_engine"]["test_run"] = "OK"
+        diagnostics["reasoning_engine"]["has_narrative"] = bool(result.get("collaborative_response", {}).get("narrative", ""))
+    except Exception as e:
+        diagnostics["reasoning_engine"]["error"] = f"{type(e).__name__}: {e}"
+
+    return diagnostics
+
 
 @app.post("/chat", response_model=ChatResponse)
 def chat(request: ChatRequest):
@@ -183,13 +273,15 @@ def _chat_handler(request: ChatRequest):
         )
     except Exception as e:
         import traceback
-        print(f"[GIDBoy Error] {e}")
-        traceback.print_exc()
+        err_msg = f"{type(e).__name__}: {str(e)}"
+        tb = traceback.format_exc()
+        print(f"[GIDBoy Error] {err_msg}")
+        print(tb)
         return ChatResponse(
             intent="error",
             confidence=0.0,
             requires_research=False,
-            response="I encountered a system error. Please try again in a moment.",
+            response=f"System error: {err_msg}\n\n{tb[:800]}",
             workflow="error",
             session_id=request.session_id or "unknown",
             is_continuation=False,

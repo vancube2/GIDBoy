@@ -316,7 +316,7 @@ export default function Home() {
         id: (Date.now() + 1).toString(),
         role: "assistant",
         content: result.response,
-        mode: result.workflowStage || mode,
+        mode: result.workflow_stage || result.workflowStage || mode,
         timestamp: new Date(),
       };
 
@@ -348,19 +348,19 @@ export default function Home() {
     return "RESEARCH";
   };
 
-  const generateResponse = async (query: string, mode: string): Promise<{ response: string; activeTopic?: string; workflowStage?: string }> => {
+  const generateResponse = async (query: string, mode: string): Promise<{ response: string; activeTopic?: string; workflowStage?: string; workflow_stage?: string }> => {
     // Call the API endpoint for intent classification with session context
-    const response = await fetch('/api/task', {
+    const response = await fetch('/api/chat', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        query,
+        message: query,
         mode: mode === 'AUTO' ? undefined : mode,
-        sessionId: sessionId,
-        sessionState: sessionState, // Send full session state for serverless persistence
-        history: messages.map(m => ({
+        session_id: sessionId,
+        // sessionState no longer needed - server persists sessions
+        conversation_history: messages.slice(-10).map(m => ({
           role: m.role,
           content: m.content
         }))
@@ -374,26 +374,26 @@ export default function Home() {
     const data = await response.json();
 
     // Update session ID if server returned a new one
-    if (data.sessionId && data.sessionId !== sessionId) {
-      setSessionId(data.sessionId);
-      localStorage.setItem('gidboy_session_id', data.sessionId);
+    if (data.session_id && data.session_id !== sessionId) {
+      setSessionId(data.session_id);
+      localStorage.setItem('gidboy_session_id', data.session_id);
     }
 
     // Update session state from response (for serverless persistence)
-    if (data.sessionState) {
-      setSessionState(data.sessionState);
-      localStorage.setItem('gidboy_session_state', JSON.stringify(data.sessionState));
+    if (data.session_state) {
+      setSessionState(data.session_state);
+      localStorage.setItem('gidboy_session_state', JSON.stringify(data.session_state));
     }
 
     // Update active topic from response
-    if (data.activeTopic) {
-      setActiveTopic(data.activeTopic);
+    if (data.active_topic) {
+      setActiveTopic(data.active_topic);
     }
 
     return {
-      response: data.result || data.response || "I'm here to help. What would you like to explore?",
-      activeTopic: data.activeTopic,
-      workflowStage: data.workflowStage,
+      response: data.response || data.result || "I'm here to help. What would you like to explore?",
+      activeTopic: data.active_topic,
+      workflowStage: data.workflow_stage,
     };
   };
 

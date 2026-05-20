@@ -4,7 +4,7 @@ from datetime import datetime
 from typing import List, Dict
 
 class Memory:
-    def __init__(self, path: str = "./memory_db.json"):
+    def __init__(self, path: str = os.environ.get("MEMORY_PATH", "./data/memory_db.json")):
         self.path = path
         self.memories = []
         self._load()

@@ -31,4 +31,4 @@ psycopg2-binary==2.9.9
 
 # Utilities
 numpy==1.26.2
-tiktoken==0.5.2
+tiktoken==0.7.0

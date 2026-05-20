@@ -1,0 +1,29 @@
+OUTPUT FORMAT:
+
+TOP OPPORTUNITIES (Mix of research, technical, and non-technical):
+
+1. [Name]
+   - What: [description]
+   - Who For: [researchers/developers/creators/analysts/operators]
+   - Why: [relevance]
+   - Skill Match: [high/medium/low]
+   - Difficulty: [1-10]
+   - Action: [specific next step]
+
+2. [Name]
+   - What: [description]
+   - Who For: [researchers/developers/creators/analysts/operators]
+   - Why: [relevance]
+   - Skill Match: [high/medium/low]
+   - Difficulty: [1-10]
+   - Action: [specific next step]
+
+3. [Name]
+   - What: [description]
+   - Who For: [researchers/developers/creators/analysts/operators]
+   - Why: [relevance]
+   - Skill Match: [high/medium/low]
+   - Difficulty: [1-10]
+   - Action: [specific next step]
+
+END.

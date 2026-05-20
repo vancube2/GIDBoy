@@ -1,0 +1,22 @@
+{
+  "session_id": "ffa763bf111a1d67",
+  "created_at": "2026-05-20T16:45:17.424941",
+  "last_updated": "2026-05-20T16:45:17.424945",
+  "active_topic": null,
+  "workflow_stage": "initial",
+  "conversation_mode": "conversational",
+  "research_depth": "surface",
+  "discovered_insights": [],
+  "key_findings": [],
+  "unresolved_questions": [],
+  "generated_hypotheses": [],
+  "strategic_implications": [],
+  "opportunity_targets": [],
+  "conversation_history": [],
+  "user_intent_history": [],
+  "pending_clarifications": [],
+  "current_research_focus": null,
+  "investigation_paths": [],
+  "completed_stages": [],
+  "next_recommended_actions": []
+}

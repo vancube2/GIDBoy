@@ -1,0 +1,15 @@
+OUTPUT FORMAT:
+
+X THREAD:
+1. Hook: [attention grabber]
+2. Context: [setup]
+3. Key Insight 1: [point]
+4. Key Insight 2: [point]
+5. Opportunity: [value proposition]
+6. Implication: [broader meaning]
+7. Closing: [CTA or thought]
+
+LINKEDIN POST:
+[professional paragraph max 150 words]
+
+END.

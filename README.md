@@ -2,6 +2,8 @@
 
 **Collaborative research and opportunity intelligence system.**
 
+*Last deployed: 2026-05-20*
+
 GIDBoy is NOT a chatbot. It is a collaborative intelligence operating system designed to:
 - Perform deep research with structured reasoning
 - Investigate complex problems iteratively

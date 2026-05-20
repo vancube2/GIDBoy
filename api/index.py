@@ -39,6 +39,7 @@ class ChatRequest(BaseModel):
     conversation_history: Optional[List[Dict[str, Any]]] = []
     session_id: Optional[str] = None
     user_id: Optional[str] = None
+    session_state: Optional[Dict[str, Any]] = None
 
 
 class ChatResponse(BaseModel):
@@ -107,6 +108,9 @@ def _chat_handler(request: ChatRequest):
             session_id=request.session_id,
             user_id=request.user_id
         )
+        # CRITICAL: Hydrate session from client-provided state for serverless continuity
+        if request.session_state:
+            session_manager.hydrate_session(session.session_id, request.session_state)
 
         # Build session state for classifier
         session_state = session_manager.get_session_summary(session.session_id)

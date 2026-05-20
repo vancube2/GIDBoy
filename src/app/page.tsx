@@ -359,7 +359,7 @@ export default function Home() {
         message: query,
         mode: mode === 'AUTO' ? undefined : mode,
         session_id: sessionId,
-        // sessionState no longer needed - server persists sessions
+        session_state: sessionState, // CRITICAL: serverless needs client-side state roundtrip
         conversation_history: messages.slice(-10).map(m => ({
           role: m.role,
           content: m.content

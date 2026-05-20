@@ -271,6 +271,38 @@ class SessionManager:
         hash_input = f"{user_component}_{timestamp}"
         return hashlib.sha256(hash_input.encode()).hexdigest()[:16]
 
+    def hydrate_session(self, session_id: str, state: dict) -> "SessionState":
+        """Hydrate session from client-provided state for serverless continuity."""
+        session = self.get_session(session_id)
+        if not session:
+            return None
+        if state.get("active_topic"):
+            session.active_topic = state["active_topic"]
+        if state.get("workflow_stage"):
+            session.workflow_stage = state["workflow_stage"]
+        if state.get("conversation_mode"):
+            session.conversation_mode = state["conversation_mode"]
+        if state.get("research_depth"):
+            session.research_depth = state["research_depth"]
+        if state.get("discovered_insights"):
+            session.discovered_insights = list(state["discovered_insights"])
+        if state.get("unresolved_questions"):
+            session.unresolved_questions = list(state["unresolved_questions"])
+        if state.get("generated_hypotheses"):
+            session.generated_hypotheses = list(state["generated_hypotheses"])
+        if state.get("completed_stages"):
+            session.completed_stages = list(state["completed_stages"])
+        if state.get("conversation_history"):
+            existing = {m.get("timestamp", ""): True for m in session.conversation_history}
+            for msg in state["conversation_history"]:
+                ts = msg.get("timestamp", "")
+                if ts and ts not in existing:
+                    session.conversation_history.append(msg)
+            if len(session.conversation_history) > 50:
+                session.conversation_history = session.conversation_history[-50:]
+        session.last_updated = datetime.now()
+        self._save_session_to_disk(session)
+        return session
     def cleanup_expired_sessions(self) -> int:
         now = datetime.now()
         expired = [

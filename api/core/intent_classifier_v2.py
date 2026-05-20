@@ -262,6 +262,9 @@ class SessionAwareIntentClassifier:
             r'\b(work together|collaborate|partner|join forces)\b',
             r'\b(can we work|let\'?s work|help me with|assist with)\b',
             r'\b(looking for help|need help|seeking assistance)\b',
+            r'\b(ready to work|want to work|shall we work|could we work)\b',
+            r'\b(start a project|begin working|get started)\b',
+            r'\b(team up|work alongside|cooperate with)\b',
         ]
         for pattern in collab_patterns:
             if re.search(pattern, text, re.IGNORECASE):
@@ -321,6 +324,12 @@ class SessionAwareIntentClassifier:
         # Short inputs likely casual
         if len(text.split()) <= 3:
             return IntentType.CASUAL_CONVERSATION, 0.70
+
+        # If user mentions research/analysis/work topics but no clear intent,
+        # default to research rather than ambiguous
+        research_indicators = ['research', 'study', 'analyze', 'investigate', 'learn about', 'deep dive', 'ecosystem', 'protocol', 'blockchain', 'crypto']
+        if any(kw in text for kw in research_indicators):
+            return IntentType.RESEARCH_REQUEST, 0.65
 
         return IntentType.AMBIGUOUS, 0.50
 

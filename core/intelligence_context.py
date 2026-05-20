@@ -97,13 +97,15 @@ class IntelligenceContext:
     previous_related_work: List[str] = field(default_factory=list)
 
     def add_reasoning_step(self, stage: str, thought: str, evidence: List[str] = None,
-                          uncertainties: List[str] = None, confidence: float = 0.5):
+                          uncertainties: List[str] = None, contradictions: List[str] = None,
+                          confidence: float = 0.5):
         """Add a reasoning step to the trail."""
         step = ReasoningStep(
             stage=stage,
             thought=thought,
             evidence=evidence or [],
             uncertainties=uncertainties or [],
+            contradictions=contradictions or [],
             confidence=confidence
         )
         self.reasoning_trail.append(step)

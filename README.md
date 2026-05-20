@@ -36,12 +36,17 @@ npm run dev
 # Install dependencies
 pip install -r requirements.txt
 
-# Run in demo mode (no Ollama required)
+# Run with Demo Mode (FREE - no API key needed!)
 python main.py
 
-# Or with Ollama
-ollama pull deepseek-r1
-python main.py
+# Or with Ollama (FREE - runs locally)
+# 1. Install Ollama: https://ollama.com
+# 2. ollama pull llama3.2
+# 3. USE_OLLAMA=1 python main.py
+
+# Or with Groq (FREE tier - requires API key)
+# 1. Get key at: https://console.groq.com (1M tokens/day free)
+# 2. GROQ_API_KEY=your_key python main.py
 ```
 
 ## Usage Examples
@@ -111,7 +116,8 @@ railway up
 |-------|-----------|
 | Frontend | Next.js 16, TypeScript, Tailwind CSS |
 | Backend | Python, FastAPI |
-| AI | Ollama (local), Demo mode (fallback) |
+| AI | Groq (free tier), Ollama (local), or Demo mode |
+| Routing | LLM-based intent classification |
 | Memory | JSON-based persistence |
 | Deployment | GitHub Pages (UI), Railway (API) |
 

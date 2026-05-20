@@ -27,24 +27,26 @@ def call_llm_api(
     """Call LLM API with automatic provider selection.
 
     Priority:
-    1. Groq API (if GROQ_API_KEY is set)
-    2. Ollama (local)
-    3. Demo mode (fallback)
+    1. Ollama (local - FREE, runs on your machine)
+    2. Groq API (if GROQ_API_KEY is set)
+    3. Demo mode (intelligent templates - no API needed)
     """
-    # Try Groq first if API key is available
+    # Check if Ollama is enabled
+    if os.environ.get("USE_OLLAMA", "0") == "1":
+        try:
+            return _call_ollama(prompt, model, temperature, max_tokens, system_prompt, timeout)
+        except Exception as e:
+            print(f"Ollama not available: {e}")
+
+    # Try Groq if API key is available
     if GROQ_API_KEY:
         try:
             return _call_groq(prompt, model, temperature, max_tokens, system_prompt, timeout)
         except Exception as e:
-            print(f"Groq API failed: {e}, trying Ollama...")
+            print(f"Groq API failed: {e}")
 
-    # Try Ollama
-    try:
-        return _call_ollama(prompt, model, temperature, max_tokens, system_prompt, timeout)
-    except Exception as e:
-        print(f"Ollama failed: {e}, using demo mode...")
-
-    # Fallback to demo mode
+    # Fallback to intelligent demo mode
+    print("Using intelligent demo mode (no API required)...")
     return generate_intelligent_response(prompt)
 
 

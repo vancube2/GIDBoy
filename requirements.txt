@@ -5,7 +5,7 @@ pydantic==2.5.3
 mangum==0.17.0  # ASGI handler for Vercel serverless
 
 # HTTP Client
-requests==2.31.0
+requests==2.32.3
 
 # Environment
 python-dotenv==1.0.0

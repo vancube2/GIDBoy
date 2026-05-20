@@ -1,4 +1,8 @@
-"""Lightweight GIDBoy server for Vercel (no heavy ML dependencies)."""
+"""Lightweight GIDBoy server for Vercel with Intent Classification.
+
+This server PROPERLY classifies intent BEFORE any orchestration.
+Never forces research on casual conversation.
+"""
 import os
 import sys
 from fastapi import FastAPI
@@ -8,8 +12,8 @@ from typing import Optional, Dict, Any, List
 
 app = FastAPI(
     title="GIDBoy Collaborative Intelligence OS",
-    description="Working with you, not answering for you",
-    version="4.0.0"
+    description="Context-aware, not keyword-triggered",
+    version="4.1.0"
 )
 
 app.add_middleware(
@@ -20,97 +24,132 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-class CollaborateRequest(BaseModel):
-    query: str
-    depth: Optional[str] = "full"
 
-class CollaborateResponse(BaseModel):
-    query: str
-    collaborative_session: Dict[str, Any]
-    reasoning_summary: str
+class ChatRequest(BaseModel):
+    message: str
+    conversation_history: Optional[List[Dict[str, Any]]] = []
 
-# Simplified collaborative engine (no heavy dependencies)
-class SimpleCollaborativeEngine:
-    def collaborate(self, query: str) -> Dict[str, Any]:
-        """Simplified collaborative reasoning."""
 
-        # Build reasoning trail
-        reasoning_trail = [
-            {"stage": "understanding", "thought": f"Understanding the query: {query}", "confidence": 0.6},
-            {"stage": "investigation", "thought": "Investigating ecosystem and evidence...", "confidence": 0.7},
-            {"stage": "analysis", "thought": "Analyzing patterns and contradictions...", "confidence": 0.75},
-            {"stage": "hypothesis", "thought": "Generating multiple hypotheses...", "confidence": 0.5},
-            {"stage": "strategy", "thought": "Developing strategic interpretation...", "confidence": 0.65},
-            {"stage": "opportunity", "thought": "Discovering opportunities from insights...", "confidence": 0.7},
-            {"stage": "action", "thought": "Planning actionable pathways...", "confidence": 0.75},
-        ]
+class ChatResponse(BaseModel):
+    intent: str
+    confidence: float
+    requires_research: bool
+    response: str
+    workflow: str
 
-        return {
-            "collaborative_intelligence_session": {
-                "query": query,
-                "status": "complete",
-                "investigation_process": {
-                    "what_we_sought_to_understand": query,
-                    "why_it_matters": "Strategic implications for ecosystem positioning",
-                    "evidence_gathered": ["Ecosystem mapping", "Market analysis", "Pattern recognition"],
-                },
-                "reasoning_process": {
-                    "hypotheses_considered": [
-                        {"hypothesis": "Primary interpretation", "confidence": 0.7},
-                        {"hypothesis": "Alternative view", "confidence": 0.5},
-                    ],
-                    "what_remains_uncertain": ["Future developments", "Market dynamics"],
-                },
-                "strategic_implications": {
-                    "what_this_means": "Ecosystem opportunities emerge from deep understanding",
-                    "who_benefits_from_this_understanding": ["Researchers", "Strategists", "Builders"],
-                },
-                "discovered_opportunities": [
-                    {
-                        "opportunity": "Research positioning in this ecosystem",
-                        "source": "Strategic analysis",
-                        "relevance": "High - matches research capabilities"
-                    }
-                ],
-                "action_pathways": {
-                    "immediate_moves": ["Deepen research", "Engage ecosystem"],
-                    "short_term_strategy": "Build expertise and connections",
-                },
-                "reasoning_trail": reasoning_trail,
-                "current_stage": "complete"
-            }
-        }
 
-engine = SimpleCollaborativeEngine()
+# Import intent classifier
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from core.intent_classifier import IntentRouter, IntentClassifier, ConversationalResponder
+
+router = IntentRouter()
+
 
 @app.get("/")
 def root():
     return {
         "name": "GIDBoy Collaborative Intelligence OS",
-        "version": "4.0.0",
-        "status": "running",
-        "mode": "lightweight"
+        "version": "4.1.0",
+        "description": "Context-aware collaborative intelligence",
+        "features": ["intent_classification", "conversational_mode", "deep_research"],
+        "endpoint": "/chat"
     }
+
 
 @app.get("/health")
 def health():
-    return {"status": "healthy", "version": "4.0.0"}
+    return {"status": "healthy", "version": "4.1.0"}
 
-@app.post("/collaborate", response_model=CollaborateResponse)
-def collaborate(request: CollaborateRequest):
-    result = engine.collaborate(request.query)
-    session = result.get("collaborative_intelligence_session", {})
 
-    reasoning_summary = "\n\n".join([
-        f"[{step.get('stage', 'unknown').upper()}] {step.get('thought', '')}"
-        for step in session.get("reasoning_trail", [])
-    ])
+@app.post("/chat", response_model=ChatResponse)
+def chat(request: ChatRequest):
+    """
+    Main chat endpoint with proper intent classification.
 
-    return CollaborateResponse(
-        query=request.query,
-        collaborative_session=session,
-        reasoning_summary=reasoning_summary
+    Classifies intent BEFORE any workflow activation.
+    Never forces research on casual input.
+    """
+    # Route based on classified intent
+    result = router.route(request.message, request.conversation_history)
+
+    return ChatResponse(
+        intent=result["intent"],
+        confidence=result["confidence"],
+        requires_research=result["requires_research"],
+        response=result["response"] or "I'd be happy to research that for you. Let me investigate...",
+        workflow=result["workflow"]
     )
+
+
+@app.post("/collaborate")
+def collaborate(request: ChatRequest):
+    """
+    Collaborative intelligence endpoint.
+
+    Only activates deep research when intent classification
+    determines it's appropriate.
+    """
+    # Classify first
+    classification = router.classifier.classify(
+        request.message,
+        request.conversation_history
+    )
+
+    # If casual conversation, respond conversationally
+    if classification.intent.value in ["greeting", "casual_conversation"]:
+        return {
+            "mode": "conversational",
+            "intent": classification.intent.value,
+            "confidence": classification.confidence,
+            "response": router.responder.generate_casual_response(request.message),
+            "note": "Research workflows only activate on clear research intent"
+        }
+
+    # If collaboration inquiry
+    if classification.intent.value == "collaboration_inquiry":
+        return {
+            "mode": "collaborative",
+            "intent": classification.intent.value,
+            "confidence": classification.confidence,
+            "response": router.responder.generate_collaboration_response(request.message),
+            "next_steps": "Share what you're working on and I'll do deep research"
+        }
+
+    # If ambiguous, ask for clarification
+    if classification.intent.value == "ambiguous":
+        return {
+            "mode": "clarification",
+            "intent": classification.intent.value,
+            "confidence": classification.confidence,
+            "response": router.responder.generate_ambiguous_response(request.message),
+            "suggestions": [
+                "Research on a specific topic",
+                "Opportunity search",
+                "Strategic brainstorming",
+                "Just chatting"
+            ]
+        }
+
+    # Only NOW do we consider research
+    if classification.requires_research:
+        return {
+            "mode": "deep_research",
+            "intent": classification.intent.value,
+            "confidence": classification.confidence,
+            "status": "research_activated",
+            "message": "Activating deep research workflow...",
+            "entities_detected": classification.extracted_entities,
+            "note": "This would trigger the full collaborative research engine"
+        }
+
+    # Default response
+    return {
+        "mode": "conversational",
+        "intent": classification.intent.value,
+        "confidence": classification.confidence,
+        "response": "I'm here to help. What would you like to explore?"
+    }
+
 
 # Vercel handler
 from mangum import Mangum

@@ -226,6 +226,14 @@ export default function Home() {
   const [input, setInput] = useState("");
   const [selectedMode, setSelectedMode] = useState("AUTO");
   const [isLoading, setIsLoading] = useState(false);
+  const [sessionId, setSessionId] = useState<string>(() => {
+    // Restore session from localStorage or create new
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('gidboy_session_id') || generateSessionId();
+    }
+    return generateSessionId();
+  });
+  const [activeTopic, setActiveTopic] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -253,19 +261,32 @@ export default function Home() {
 
     try {
       const mode = selectedMode === "AUTO" ? detectMode(input) : selectedMode;
-      const response = await generateResponse(input, mode);
+      const result = await generateResponse(input, mode);
+
+      // Update active topic state
+      if (result.activeTopic) {
+        setActiveTopic(result.activeTopic);
+      }
 
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: "assistant",
-        content: response,
-        mode: mode,
+        content: result.response,
+        mode: result.workflowStage || mode,
         timestamp: new Date(),
       };
 
       setMessages((prev) => [...prev, assistantMessage]);
     } catch (error) {
       console.error("Error:", error);
+      const errorMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        role: "assistant",
+        content: "I encountered an error. Please try again.",
+        mode: "error",
+        timestamp: new Date(),
+      };
+      setMessages((prev) => [...prev, errorMessage]);
     } finally {
       setIsLoading(false);
     }
@@ -283,8 +304,12 @@ export default function Home() {
     return "RESEARCH";
   };
 
-  const generateResponse = async (query: string, mode: string): Promise<string> => {
-    // Call the API endpoint for intent classification
+  const generateSessionId = (): string => {
+    return 'sess_' + Math.random().toString(36).substring(2, 15);
+  };
+
+  const generateResponse = async (query: string, mode: string): Promise<{ response: string; activeTopic?: string; workflowStage?: string }> => {
+    // Call the API endpoint for intent classification with session context
     const response = await fetch('/api/task', {
       method: 'POST',
       headers: {
@@ -293,6 +318,7 @@ export default function Home() {
       body: JSON.stringify({
         query,
         mode: mode === 'AUTO' ? undefined : mode,
+        sessionId: sessionId,
         history: messages.map(m => ({
           role: m.role,
           content: m.content
@@ -305,7 +331,23 @@ export default function Home() {
     }
 
     const data = await response.json();
-    return data.result || data.response || "I'm here to help. What would you like to explore?";
+
+    // Update session ID if server returned a new one
+    if (data.sessionId && data.sessionId !== sessionId) {
+      setSessionId(data.sessionId);
+      localStorage.setItem('gidboy_session_id', data.sessionId);
+    }
+
+    // Update active topic from response
+    if (data.activeTopic) {
+      setActiveTopic(data.activeTopic);
+    }
+
+    return {
+      response: data.result || data.response || "I'm here to help. What would you like to explore?",
+      activeTopic: data.activeTopic,
+      workflowStage: data.workflowStage,
+    };
   };
 
   return (
@@ -396,6 +438,20 @@ export default function Home() {
               <li>• Request "workflows" for processes</li>
             </ul>
           </div>
+
+          {/* Session Context */}
+          {activeTopic && (
+            <div className="mt-4 bg-green-900/20 border border-green-800/50 rounded-xl p-4">
+              <h3 className="text-sm font-semibold text-green-400 mb-2">
+                🔬 Active Research
+              </h3>
+              <p className="text-xs text-gray-300 mb-2 font-medium">{activeTopic}</p>
+              <div className="flex items-center gap-2">
+                <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                <span className="text-xs text-gray-500">Session active</span>
+              </div>
+            </div>
+          )}
         </aside>
 
         <main className="flex-1 flex flex-col min-h-[calc(100vh-140px)] max-w-4xl">

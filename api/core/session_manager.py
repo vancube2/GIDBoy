@@ -3,6 +3,7 @@ from dataclasses import dataclass, field, asdict
 from datetime import datetime, timedelta
 import json
 import hashlib
+import tempfile
 import os
 
 @dataclass
@@ -44,8 +45,12 @@ class SessionManager:
     def __init__(self):
         self._sessions: Dict[str, SessionState] = {}
         self._session_timeout = timedelta(hours=24)
-        self._persist_dir = os.environ.get("SESSION_PERSIST_DIR", "./data/sessions")
-        os.makedirs(self._persist_dir, exist_ok=True)
+        self._persist_dir = os.environ.get("SESSION_PERSIST_DIR", os.path.join(tempfile.gettempdir(), "gidboy_sessions"))
+        try:
+            os.makedirs(self._persist_dir, exist_ok=True)
+        except OSError:
+            self._persist_dir = os.path.join(tempfile.gettempdir(), "gidboy_sessions")
+            os.makedirs(self._persist_dir, exist_ok=True)
         self._load_all_sessions()
 
     def _session_file_path(self, session_id: str) -> str:

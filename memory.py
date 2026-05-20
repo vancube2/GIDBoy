@@ -1,10 +1,11 @@
 import json
 import os
+import tempfile
 from datetime import datetime
 from typing import List, Dict
 
 class Memory:
-    def __init__(self, path: str = os.environ.get("MEMORY_PATH", "./data/memory_db.json")):
+    def __init__(self, path: str = os.environ.get("MEMORY_PATH", os.path.join(tempfile.gettempdir(), "gidboy_memory.json"))):
         self.path = path
         self.memories = []
         self._load()

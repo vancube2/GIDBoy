@@ -106,81 +106,97 @@ def _chat_handler(request: ChatRequest):
 
     Maintains persistent workflow state across conversations.
     """
-    # Get or create session
-    session = session_manager.get_or_create_session(
-        session_id=request.session_id,
-        user_id=request.user_id
-    )
-
-    # Build session state for classifier
-    session_state = session_manager.get_session_summary(session.session_id)
-
-    # Classify with session context
-    classification = classifier.classify(
-        request.message,
-        request.conversation_history,
-        session_state
-    )
-
-    # Generate response based on classification
-    response_data = generate_response(
-        request.message,
-        classification,
-        session,
-        request.conversation_history
-    )
-
-    # Update session state
-    session_manager.add_message(
-        session.session_id,
-        'user',
-        request.message,
-        classification.intent.value
-    )
-
-    # Handle different intents
-    if classification.intent == IntentType.RESEARCH_REQUEST:
-        # Initialize new research session
-        session_manager.set_active_topic(
-            session.session_id,
-            request.message,
-            "deep"
+    try:
+        session = session_manager.get_or_create_session(
+            session_id=request.session_id,
+            user_id=request.user_id
         )
-        session_manager.transition_stage(session.session_id, "understanding")
 
-    elif classification.intent in [IntentType.RESEARCH_CONTINUATION, IntentType.RESEARCH_DEEPEN]:
-        # Continue existing research
-        if classification.recommended_stage:
-            session_manager.transition_stage(
+        # Build session state for classifier
+        session_state = session_manager.get_session_summary(session.session_id)
+
+        # Classify with session context
+        classification = classifier.classify(
+            request.message,
+            request.conversation_history,
+            session_state
+        )
+
+        # Generate response based on classification
+        response_data = generate_response(
+            request.message,
+            classification,
+            session,
+            request.conversation_history
+        )
+
+        # Update session state
+        session_manager.add_message(
+            session.session_id,
+            'user',
+            request.message,
+            classification.intent.value
+        )
+
+        # Handle different intents
+        if classification.intent == IntentType.RESEARCH_REQUEST:
+            # Initialize new research session
+            session_manager.set_active_topic(
                 session.session_id,
-                classification.recommended_stage
+                request.message,
+                "deep"
             )
+            session_manager.transition_stage(session.session_id, "understanding")
 
-    elif classification.intent == IntentType.COLLABORATION_INQUIRY:
-        session.conversation_mode = "collaborative"
+        elif classification.intent in [IntentType.RESEARCH_CONTINUATION, IntentType.RESEARCH_DEEPEN]:
+            # Continue existing research
+            if classification.recommended_stage:
+                session_manager.transition_stage(
+                    session.session_id,
+                    classification.recommended_stage
+                )
 
-    # Save assistant response
-    session_manager.add_message(
-        session.session_id,
-        'assistant',
-        response_data['response']
-    )
+        elif classification.intent == IntentType.COLLABORATION_INQUIRY:
+            session.conversation_mode = "collaborative"
 
-    # Get updated session state
-    final_state = session_manager.get_session_summary(session.session_id)
+        # Save assistant response
+        session_manager.add_message(
+            session.session_id,
+            'assistant',
+            response_data['response']
+        )
 
-    return ChatResponse(
-        intent=classification.intent.value,
-        confidence=classification.confidence,
-        requires_research=classification.requires_research,
-        response=response_data['response'],
-        workflow=classification.suggested_behavior,
-        session_id=session.session_id,
-        is_continuation=classification.is_continuation,
-        active_topic=final_state.get('active_topic'),
-        workflow_stage=final_state.get('workflow_stage'),
-        session_state=final_state
-    )
+        # Get updated session state
+        final_state = session_manager.get_session_summary(session.session_id)
+
+        return ChatResponse(
+            intent=classification.intent.value,
+            confidence=classification.confidence,
+            requires_research=classification.requires_research,
+            response=response_data['response'],
+            workflow=classification.suggested_behavior,
+            session_id=session.session_id,
+            is_continuation=classification.is_continuation,
+            active_topic=final_state.get('active_topic'),
+            workflow_stage=final_state.get('workflow_stage'),
+            session_state=final_state
+        )
+    except Exception as e:
+        import traceback
+        print(f"[GIDBoy Error] {e}")
+        traceback.print_exc()
+        return ChatResponse(
+            intent="error",
+            confidence=0.0,
+            requires_research=False,
+            response="I encountered a system error. Please try again in a moment.",
+            workflow="error",
+            session_id=request.session_id or "unknown",
+            is_continuation=False,
+            active_topic=None,
+            workflow_stage="error",
+            session_state={}
+        )
 
 
 @app.get("/session/{session_id}")

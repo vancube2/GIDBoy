@@ -2,7 +2,7 @@
   "version": 2,
   "builds": [
     {
-      "src": "api/index.py",
+      "src": "api/collaborative_server.py",
       "use": "@vercel/python",
       "config": {
         "maxLambdaSize": "50mb"
@@ -16,7 +16,7 @@
   "routes": [
     {
       "src": "/api/(.*)",
-      "dest": "api/index.py"
+      "dest": "api/collaborative_server.py"
     },
     {
       "src": "/(.*)",
@@ -28,7 +28,7 @@
     "PYTHONPATH": "."
   },
   "functions": {
-    "api/index.py": {
+    "api/collaborative_server.py": {
       "maxDuration": 60
     }
   }

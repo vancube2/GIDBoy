@@ -734,4 +734,4 @@ def generate_default_research(task: str) -> str:
 - Launch pilot program
 - Iterate based on data
 
-END.""
+END."""

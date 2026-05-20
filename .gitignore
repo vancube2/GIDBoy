@@ -39,3 +39,4 @@ gidboy-ui/
 # Build
 dist/
 build/
+.vercel

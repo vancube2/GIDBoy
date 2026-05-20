@@ -1,20 +1,16 @@
-"""FastAPI backend for GIDBoy."""
+"""FastAPI backend for GIDBoy with LLM-based intelligent routing."""
 import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import Optional
 
-from router import route
-from ollama_client import call_ollama
+from llm_router import llm_route
+from llm_client import call_llm_api
 from prompts import SYSTEM_PROMPT, MODES
 from memory import Memory
 
-# Use demo mode if no Ollama available
-if not os.environ.get("OLLAMA_URL"):
-    os.environ["GIDBOY_DEMO"] = "1"
-
-app = FastAPI(title="GIDBoy Intelligence OS", version="1.0.0")
+app = FastAPI(title="GIDBoy Intelligence OS", version="2.0.0")
 
 # CORS
 app.add_middleware(
@@ -40,17 +36,20 @@ class TaskResponse(BaseModel):
     query: str
     result: str
     memory_used: bool
+    routing_confidence: Optional[float] = None
 
 
 @app.post("/task", response_model=TaskResponse)
 def task(req: TaskRequest):
-    """Execute a GIDBoy task."""
+    """Execute a GIDBoy task with LLM-based routing."""
     # Route or use explicit mode
     if req.mode:
         mode = req.mode.upper()
         clean_query = req.query
+        confidence = 1.0
     else:
-        mode, clean_query = route(req.query)
+        mode, clean_query = llm_route(req.query)
+        confidence = 0.9  # LLM routing confidence
 
     # Get memory context
     context = ""
@@ -59,7 +58,10 @@ def task(req: TaskRequest):
         if memories:
             context = f"\nRELEVANT MEMORY:\n{memories}\n"
 
-    # Build prompt
+    # Get mode-specific instructions
+    mode_instructions = MODES.get(mode, "Respond concisely and accurately to the user's query.")
+
+    # Build the full prompt
     prompt = f"""{SYSTEM_PROMPT}
 
 MODE: {mode}
@@ -70,11 +72,17 @@ TASK:
 {clean_query}
 
 INSTRUCTIONS:
-{MODES.get(mode, "Respond concisely.")}
-"""
+{mode_instructions}
 
-    # Call Ollama
-    result = call_ollama(prompt)
+Provide a comprehensive, accurate response tailored specifically to the task above."""
+
+    # Call LLM API (Groq → Ollama → Demo fallback)
+    result = call_llm_api(
+        prompt=prompt,
+        system_prompt=SYSTEM_PROMPT,
+        temperature=0.3,
+        max_tokens=2000
+    )
 
     # Store to memory
     memory.store(clean_query, result, mode)
@@ -83,14 +91,20 @@ INSTRUCTIONS:
         mode=mode,
         query=clean_query,
         result=result,
-        memory_used=bool(context)
+        memory_used=bool(context),
+        routing_confidence=confidence
     )
 
 
 @app.get("/health")
 def health():
     """Health check endpoint."""
-    return {"status": "ok", "modes": list(MODES.keys())}
+    return {
+        "status": "ok",
+        "version": "2.0.0",
+        "modes": list(MODES.keys()),
+        "routing": "llm-based"
+    }
 
 
 @app.get("/")
@@ -98,9 +112,21 @@ def root():
     """Root endpoint."""
     return {
         "name": "GIDBoy Intelligence OS",
-        "version": "1.0.0",
+        "version": "2.0.0",
+        "description": "LLM-based crypto research and opportunity intelligence",
         "modes": list(MODES.keys()),
-        "endpoints": ["/task", "/health"]
+        "endpoints": ["/task", "/health"],
+        "routing": "llm-based"
+    }
+
+
+@app.get("/modes")
+def get_modes():
+    """Get available modes and their descriptions."""
+    from llm_router import MODE_DEFINITIONS
+    return {
+        "modes": MODE_DEFINITIONS,
+        "count": len(MODE_DEFINITIONS)
     }
 
 

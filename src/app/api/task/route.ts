@@ -148,10 +148,14 @@ function getOrCreateSession(sessionId: string): SessionState {
 function fallbackResponse(query: string, mode: string | undefined, session: SessionState) {
   const query_lower = query.toLowerCase().trim();
 
+  console.log('[GIDBoy] Processing query:', query.substring(0, 50));
+  console.log('[GIDBoy] Session active topic:', session.activeTopic);
+
   // Check for CONTINUATION first if we have active topic
   if (session.activeTopic) {
     const continuationResult = checkContinuation(query_lower, session);
     if (continuationResult) {
+      console.log('[GIDBoy] Detected as continuation');
       return continuationResult;
     }
   }
@@ -163,22 +167,24 @@ function fallbackResponse(query: string, mode: string | undefined, session: Sess
 
   const isCollaboration = /\b(work together|collaborate|partner|join forces|can we work|help with|assist with|looking for help)\b/i.test(query_lower);
 
-  // ENHANCED: More flexible research detection
-  const isResearch =
-    /\b(deep dive|deep analysis|comprehensive study|in-depth analysis|research|investigate|investigation)\b/i.test(query_lower) ||
-    /\b(analyze|analysis|study|examine|assessment|evaluation)\b.*\b(on|into|about|of)\b/i.test(query_lower) ||
-    /\b(what is|how does|why does|how do|what are)\b.*\b(work|function|mechanism|ecosystem|problems|challenges|issues)\b/i.test(query_lower) ||
-    /\b(validator economics|tokenomics|ecosystem analysis|market research|liquidity provision|defi)\b/i.test(query_lower) ||
-    /\b(landscape|overview) of\b/i.test(query_lower) ||
-    /\b(compare|contrast|versus|vs)\b.*\b(with|and|to)\b/i.test(query_lower) ||
-    /\b(problems?|challenges?|issues?)\b.*\b(with|in|on)\b/i.test(query_lower) ||
-    /\b(let's|let us)\s+\b(research|analyze|study|look at|examine|explore)\b/i.test(query_lower);
+  // ENHANCED: More flexible research detection - SIMPLIFIED
+  const hasDeepDive = /\b(deep dive|deep analysis)\b/i.test(query_lower);
+  const hasResearchWord = /\b(research|investigate|investigation|study|analyze)\b/i.test(query_lower);
+  const hasCryptoTopic = /\b(liquidity|provision|solana|ethereum|bitcoin|defi|protocol|validator|tokenomics|ecosystem)\b/i.test(query_lower);
+  const hasProblemStatement = /\b(problems?|challenges?|issues?)\b/i.test(query_lower);
+  const hasLetsResearch = /\b(let'?s|let us)\s+(do|a|some)?\s*(deep|research|analyze|study|look|explore)\b/i.test(query_lower);
+
+  const isResearch = hasDeepDive || hasResearchWord || (hasCryptoTopic && hasProblemStatement) || hasLetsResearch;
+
+  console.log('[GIDBoy] isGreeting:', isGreeting, '| isCasual:', isCasual, '| isCollaboration:', isCollaboration, '| isResearch:', isResearch);
 
   const isOpportunity = /\b(find|search|looking for)\b.*\b(grants?|jobs?|funding|opportunities?|bounties?|fellowship|stipend|position|role)\b/i.test(query_lower);
 
   // Check for transition words (continuation)
   const hasTransitionWords = /^(first|next|then|now|okay|ok|so|alright)[,\s]+/i.test(query_lower) ||
     /\b(go deeper|elaborate|tell me more|expand on|continue|proceed)\b/i.test(query_lower);
+
+  console.log('[GIDBoy] activeTopic:', session.activeTopic, '| hasTransitionWords:', hasTransitionWords);
 
   // GREETING
   if (isGreeting) {
@@ -222,10 +228,27 @@ function fallbackResponse(query: string, mode: string | undefined, session: Sess
 
   // RESEARCH REQUEST (new topic)
   if (isResearch && !session.activeTopic) {
-    // Extract topic from query
-    const topicMatch = query.match(/\b(on|about|into)\s+(.+?)(?:\s+in\s+\d{4})?$/i) ||
-                      query.match(/\b(research|analyze|study)\s+(.+?)(?:\s+in\s+\d{4})?$/i);
-    const topic = topicMatch ? topicMatch[2] : query;
+    console.log('[GIDBoy] Entering RESEARCH REQUEST block (new topic)');
+
+    // Extract topic from query - improved extraction
+    let topic = query;
+
+    // Try to extract topic after keywords like "on", "into", "about"
+    const topicPatterns = [
+      /\b(?:deep dive|research|analyze|study)\s+(?:into|on|about)\s+(.+?)(?:\s+in\s+\d{4})?$/i,
+      /\b(?:let'?s|let us)\s+(?:do\s+a\s+)?(?:deep\s+dive|research)\s+(?:into|on)?\s*(.+?)(?:\s+in\s+\d{4})?$/i,
+      /\b(?:on|about|into)\s+(.+?)(?:\s+in\s+\d{4})?$/i,
+    ];
+
+    for (const pattern of topicPatterns) {
+      const match = query.match(pattern);
+      if (match && match[1]) {
+        topic = match[1].trim();
+        break;
+      }
+    }
+
+    console.log('[GIDBoy] Extracted topic:', topic);
 
     session.activeTopic = topic;
     session.workflowStage = 'understanding';
@@ -244,10 +267,12 @@ function fallbackResponse(query: string, mode: string | undefined, session: Sess
 
   // RESEARCH CONTINUATION (existing topic)
   if (isResearch && session.activeTopic) {
+    console.log('[GIDBoy] Entering RESEARCH CONTINUATION block');
     session.workflowStage = 'investigation';
 
     // Check for specific sub-intents
     if (/\b(problems?|challenges?|issues?)\b/i.test(query_lower)) {
+      console.log('[GIDBoy] Detected problem identification intent');
       return {
         mode: 'research',
         result: `Let me identify the key problems and challenges with ${session.activeTopic}. I'll analyze the current landscape...`,
@@ -322,7 +347,28 @@ function fallbackResponse(query: string, mode: string | undefined, session: Sess
     };
   }
 
+  // FALLBACK RESEARCH: If it's clearly a research question but no patterns matched,
+  // create a research session anyway
+  if (hasCryptoTopic || hasResearchWord) {
+    console.log('[GIDBoy] FALLBACK RESEARCH triggered');
+    const topic = query.replace(/\b(let's|let us|do a|some|deep|research|on|about)\b/gi, '').trim();
+    session.activeTopic = topic || query;
+    session.workflowStage = 'understanding';
+    session.conversationMode = 'research';
+
+    return {
+      mode: 'research',
+      result: `I'd be happy to research ${session.activeTopic}. Let me dive deep into this and provide comprehensive analysis.`,
+      query,
+      confidence: 0.80,
+      requires_research: true,
+      workflow: 'deep_research',
+      isContinuation: false,
+    };
+  }
+
   // Complete fallback
+  console.log('[GIDBoy] COMPLETE FALLBACK - no patterns matched');
   return {
     mode: 'clarification',
     result: `I'd like to help with "${query}". Could you clarify what you're looking for?\n\n• Research on a specific topic?\n• Help finding opportunities?\n• Strategic brainstorming?\n• Or just chatting?`,
@@ -336,6 +382,8 @@ function fallbackResponse(query: string, mode: string | undefined, session: Sess
 
 // Check if this is a continuation of active research
 function checkContinuation(query_lower: string, session: SessionState) {
+  console.log('[GIDBoy] checkContinuation called with active topic:', session.activeTopic);
+
   // Strong continuation signals
   const continuationPatterns = [
     /^(first|next|then|now|okay|ok|so|alright)[,\s]+/i,
@@ -347,12 +395,14 @@ function checkContinuation(query_lower: string, session: SessionState) {
   ];
 
   const isContinuation = continuationPatterns.some(pattern => pattern.test(query_lower));
+  console.log('[GIDBoy] isContinuation pattern match:', isContinuation);
 
   // Check for topic overlap
   const topicWords = session.activeTopic?.toLowerCase().split(' ') || [];
   const hasTopicWords = topicWords.some(word =>
     word.length > 3 && query_lower.includes(word)
   );
+  console.log('[GIDBoy] hasTopicWords overlap:', hasTopicWords, 'words:', topicWords);
 
   if (isContinuation || hasTopicWords) {
     session.workflowStage = 'investigation';

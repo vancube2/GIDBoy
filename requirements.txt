@@ -2,6 +2,7 @@
 fastapi==0.109.0
 uvicorn==0.27.0
 pydantic==2.5.3
+mangum==0.17.0  # ASGI handler for Vercel serverless
 
 # HTTP Client
 requests==2.31.0

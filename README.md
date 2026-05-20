@@ -240,7 +240,7 @@ Every research task follows this mandatory process:
 | Vector DB | ChromaDB |
 | LLM | Groq / Ollama / Demo |
 | Memory | JSON + ChromaDB |
-| Deployment | GitHub Pages (UI), Railway (API) |
+| Deployment | GitHub Pages (UI), Vercel (API) |
 
 ## 📝 Environment Variables
 

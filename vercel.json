@@ -2,11 +2,8 @@
   "version": 2,
   "builds": [
     {
-      "src": "api/collaborative_server.py",
-      "use": "@vercel/python",
-      "config": {
-        "maxLambdaSize": "50mb"
-      }
+      "src": "api/simple_server.py",
+      "use": "@vercel/python"
     },
     {
       "src": "package.json",
@@ -16,20 +13,11 @@
   "routes": [
     {
       "src": "/api/(.*)",
-      "dest": "api/collaborative_server.py"
+      "dest": "api/simple_server.py"
     },
     {
       "src": "/(.*)",
       "dest": "/$1"
     }
-  ],
-  "env": {
-    "NEXT_TELEMETRY_DISABLED": "1",
-    "PYTHONPATH": "."
-  },
-  "functions": {
-    "api/collaborative_server.py": {
-      "maxDuration": 60
-    }
-  }
+  ]
 }

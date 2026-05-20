@@ -1,0 +1,13 @@
+# Lightweight requirements for Vercel serverless
+# Heavy ML libraries removed - they exceed serverless limits
+
+# Core API
+fastapi==0.109.0
+pydantic==2.5.3
+mangum==0.17.0
+
+# HTTP Client
+requests==2.31.0
+
+# Environment
+python-dotenv==1.0.0

@@ -265,6 +265,29 @@ export default function Home() {
     scrollToBottom();
   }, [messages]);
 
+  // Sync activeTopic when sessionState changes (for UI display)
+  useEffect(() => {
+    if (sessionState?.activeTopic) {
+      setActiveTopic(sessionState.activeTopic);
+    }
+  }, [sessionState?.activeTopic]);
+
+  // Debug: Log session state changes
+  useEffect(() => {
+    console.log('[GIDBoy Client] Session state updated:', sessionState);
+  }, [sessionState]);
+
+  // Ensure sessionState is loaded from localStorage on mount (failsafe)
+  useEffect(() => {
+    if (!sessionState) {
+      const saved = localStorage.getItem('gidboy_session_state');
+      if (saved) {
+        console.log('[GIDBoy Client] Restoring session from localStorage');
+        setSessionState(JSON.parse(saved));
+      }
+    }
+  }, []);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!input.trim() || isLoading) return;

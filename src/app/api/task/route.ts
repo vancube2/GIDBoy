@@ -179,43 +179,42 @@ function restoreSession(sessionId: string, state: Partial<SessionState>): Sessio
 function fallbackResponse(query: string, mode: string | undefined, session: SessionState) {
   const query_lower = query.toLowerCase().trim();
 
+  console.log('[GIDBoy] ===========================================');
   console.log('[GIDBoy] Processing query:', query.substring(0, 50));
   console.log('[GIDBoy] Session active topic:', session.activeTopic);
+  console.log('[GIDBoy] Session workflow stage:', session.workflowStage);
 
-  // Check for CONTINUATION first if we have active topic
+  // ==== PRIORITY 1: Check for CONTINUATION if we have active topic ====
   if (session.activeTopic) {
+    console.log('[GIDBoy] Checking for continuation patterns...');
     const continuationResult = checkContinuation(query_lower, session);
     if (continuationResult) {
-      console.log('[GIDBoy] Detected as continuation');
+      console.log('[GIDBoy] ✓ Detected as CONTINUATION');
       return continuationResult;
     }
+    console.log('[GIDBoy] Not a continuation, proceeding to intent detection');
   }
 
-  // Intent classification patterns
+  // ==== Intent classification patterns ====
   const isGreeting = /^(hi|hello|hey|yo|hiya|greetings|what's up|howdy|sup)[\s!.,]*$/i.test(query_lower);
 
   const isCasual = /\b(how are you|how's it going|what are you up to|thanks|thank you|appreciate it|nice|cool|awesome|great|tell me about yourself)\b/i.test(query_lower);
 
   const isCollaboration = /\b(work together|collaborate|partner|join forces|can we work|help with|assist with|looking for help)\b/i.test(query_lower);
 
-  // ENHANCED: More flexible research detection - SIMPLIFIED
+  // SIMPLIFIED research detection
   const hasDeepDive = /\b(deep dive|deep analysis)\b/i.test(query_lower);
   const hasResearchWord = /\b(research|investigate|investigation|study|analyze)\b/i.test(query_lower);
-  const hasCryptoTopic = /\b(liquidity|provision|solana|ethereum|bitcoin|defi|protocol|validator|tokenomics|ecosystem)\b/i.test(query_lower);
-  const hasProblemStatement = /\b(problems?|challenges?|issues?)\b/i.test(query_lower);
-  const hasLetsResearch = /\b(let'?s|let us)\s+(do|a|some)?\s*(deep|research|analyze|study|look|explore)\b/i.test(query_lower);
+  const hasCryptoTopic = /\b(liquidity|provision|solana|ethereum|bitcoin|defi|protocol|validator|tokenomics|ecosystem|blockchain|crypto)\b/i.test(query_lower);
+  const hasProblemStatement = /\b(problems?|challenges?|issues?|risks?|obstacles?)\b/i.test(query_lower);
+  const hasExploreIntent = /\b(explore|look at|examine|investigate|dive into)\b/i.test(query_lower);
 
-  const isResearch = hasDeepDive || hasResearchWord || (hasCryptoTopic && hasProblemStatement) || hasLetsResearch;
+  const isResearch = hasDeepDive || hasResearchWord || (hasCryptoTopic && hasProblemStatement) || (hasCryptoTopic && hasExploreIntent);
 
   console.log('[GIDBoy] isGreeting:', isGreeting, '| isCasual:', isCasual, '| isCollaboration:', isCollaboration, '| isResearch:', isResearch);
+  console.log('[GIDBoy] hasCryptoTopic:', hasCryptoTopic, '| hasProblemStatement:', hasProblemStatement);
 
   const isOpportunity = /\b(find|search|looking for)\b.*\b(grants?|jobs?|funding|opportunities?|bounties?|fellowship|stipend|position|role)\b/i.test(query_lower);
-
-  // Check for transition words (continuation)
-  const hasTransitionWords = /^(first|next|then|now|okay|ok|so|alright)[,\s]+/i.test(query_lower) ||
-    /\b(go deeper|elaborate|tell me more|expand on|continue|proceed)\b/i.test(query_lower);
-
-  console.log('[GIDBoy] activeTopic:', session.activeTopic, '| hasTransitionWords:', hasTransitionWords);
 
   // GREETING
   if (isGreeting) {
@@ -415,28 +414,48 @@ function fallbackResponse(query: string, mode: string | undefined, session: Sess
 function checkContinuation(query_lower: string, session: SessionState) {
   console.log('[GIDBoy] checkContinuation called with active topic:', session.activeTopic);
 
-  // Strong continuation signals
+  if (!session.activeTopic) {
+    console.log('[GIDBoy] No active topic, skipping continuation check');
+    return null;
+  }
+
+  // ==== STRONG continuation signals ====
   const continuationPatterns = [
-    /^(first|next|then|now|okay|ok|so|alright)[,\s]+/i,
-    /\b(go deeper|elaborate|tell me more|expand on|continue|proceed)\b/i,
+    /^(first|next|then|now|okay|ok|so|alright|great|cool)[,\s]+/i,
+    /\b(go deeper|elaborate|tell me more|expand on|continue|proceed|move on)\b/i,
     /^(what about|how about)\s+/i,
-    /\b(list|what are)\s+(the\s+)?(problems?|challenges?|issues?)\b/i,
-    /\b(list|what are)\s+(the\s+)?(solutions?|protocols?|projects?)\b/i,
-    /\b(who|which)\s+(is|are)\s+(solving|addressing|working on)\b/i,
+    /\b(list|what are|show me|find)\s+(the\s+)?(problems?|challenges?|issues?|risks?|obstacles?)\b/i,
+    /\b(list|what are|show me|find)\s+(the\s+)?(solutions?|protocols?|projects?|players?|actors?)\b/i,
+    /\b(who|which)\s+(is|are)\s+(solving|addressing|working on|tackling)\b/i,
+    /\b(tell me about|explain)\s+(the\s+)?(problems?|challenges?|solutions?)\b/i,
   ];
 
   const isContinuation = continuationPatterns.some(pattern => pattern.test(query_lower));
   console.log('[GIDBoy] isContinuation pattern match:', isContinuation);
 
-  // Check for topic overlap
-  const topicWords = session.activeTopic?.toLowerCase().split(' ') || [];
-  const hasTopicWords = topicWords.some(word =>
-    word.length > 3 && query_lower.includes(word)
-  );
-  console.log('[GIDBoy] hasTopicWords overlap:', hasTopicWords, 'words:', topicWords);
+  // ==== Check for topic word overlap ====
+  const topicWords = session.activeTopic.toLowerCase().split(/\s+/);
+  const hasTopicWords = topicWords.some(word => {
+    const isSignificant = word.length > 3;
+    const isInQuery = query_lower.includes(word);
+    if (isSignificant && isInQuery) {
+      console.log('[GIDBoy] Matched topic word:', word);
+    }
+    return isSignificant && isInQuery;
+  });
+  console.log('[GIDBoy] hasTopicWords overlap:', hasTopicWords);
 
-  if (isContinuation || hasTopicWords) {
+  // ==== Also check if query is about the same domain (crypto/blockchain) ====
+  const cryptoKeywords = ['liquidity', 'solana', 'ethereum', 'bitcoin', 'defi', 'protocol', 'token', 'staking', 'validator', 'blockchain', 'crypto'];
+  const hasCryptoContext = cryptoKeywords.some(kw => query_lower.includes(kw));
+  const topicHasCrypto = cryptoKeywords.some(kw => session.activeTopic.toLowerCase().includes(kw));
+  const isSameDomain = hasCryptoContext && topicHasCrypto;
+
+  console.log('[GIDBoy] isSameDomain:', isSameDomain, '| hasCryptoContext:', hasCryptoContext);
+
+  if (isContinuation || hasTopicWords || isSameDomain) {
     session.workflowStage = 'investigation';
+    console.log('[GIDBoy] ✓ Confirmed as continuation');
 
     // Determine specific type of continuation
     if (/\b(problems?|challenges?|issues?)\b/i.test(query_lower)) {

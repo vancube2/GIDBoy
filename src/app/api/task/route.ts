@@ -19,7 +19,7 @@ interface SessionState {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { query, mode, sessionId: clientSessionId } = body;
+    const { query, mode, sessionId: clientSessionId, sessionState: clientSessionState } = body;
 
     if (!query) {
       return NextResponse.json(
@@ -28,9 +28,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Get or create session
+    // Get or create session - prefer client-provided state for serverless environments
     const sessionId = clientSessionId || generateSessionId();
-    const session = getOrCreateSession(sessionId);
+    const session = clientSessionState
+      ? restoreSession(sessionId, clientSessionState)
+      : getOrCreateSession(sessionId);
 
     // Update session with user message
     session.conversationHistory.push({
@@ -104,9 +106,19 @@ export async function POST(request: NextRequest) {
     // Save session
     sessionStore.set(sessionId, session);
 
+    // Return full session state for client storage (serverless compatibility)
+    const sessionStateForClient = {
+      activeTopic: session.activeTopic,
+      workflowStage: session.workflowStage,
+      conversationMode: session.conversationMode,
+      discoveredInsights: session.discoveredInsights,
+      conversationHistory: session.conversationHistory.slice(-20), // Last 20 messages
+    };
+
     return NextResponse.json({
       ...fallbackResult,
       sessionId: sessionId,
+      sessionState: sessionStateForClient,
       activeTopic: session.activeTopic,
       workflowStage: session.workflowStage,
     });
@@ -125,6 +137,8 @@ function generateSessionId(): string {
 }
 
 function getOrCreateSession(sessionId: string): SessionState {
+  // In serverless environments, we rely on client-provided state
+  // This is a fallback for when client doesn't provide state
   const existing = sessionStore.get(sessionId);
   if (existing) {
     existing.lastUpdated = Date.now();
@@ -142,6 +156,23 @@ function getOrCreateSession(sessionId: string): SessionState {
 
   sessionStore.set(sessionId, newSession);
   return newSession;
+}
+
+function restoreSession(sessionId: string, state: Partial<SessionState>): SessionState {
+  // Restore session from client-provided state (for serverless compatibility)
+  const restored: SessionState = {
+    sessionId,
+    activeTopic: state.activeTopic,
+    workflowStage: state.workflowStage || 'initial',
+    conversationMode: state.conversationMode || 'conversational',
+    discoveredInsights: state.discoveredInsights || [],
+    conversationHistory: state.conversationHistory || [],
+    lastUpdated: Date.now(),
+  };
+
+  // Also update server-side cache if available
+  sessionStore.set(sessionId, restored);
+  return restored;
 }
 
 // Session-aware fallback intent classification

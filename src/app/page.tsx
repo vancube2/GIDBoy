@@ -11,6 +11,14 @@ interface Message {
   timestamp: Date;
 }
 
+interface SessionState {
+  activeTopic?: string;
+  workflowStage: string;
+  conversationMode: string;
+  discoveredInsights: string[];
+  conversationHistory: { role: string; content: string; timestamp: string }[];
+}
+
 const MODES = [
   { id: "AUTO", label: "Auto", icon: "🤖", color: "bg-gray-700" },
   { id: "RESEARCH", label: "Research", icon: "🔬", color: "bg-blue-600" },
@@ -238,7 +246,15 @@ export default function Home() {
     }
     return generateSessionId();
   });
-  const [activeTopic, setActiveTopic] = useState<string | null>(null);
+  const [sessionState, setSessionState] = useState<SessionState | null>(() => {
+    // Restore full session state from localStorage
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('gidboy_session_state');
+      return saved ? JSON.parse(saved) : null;
+    }
+    return null;
+  });
+  const [activeTopic, setActiveTopic] = useState<string | null>(sessionState?.activeTopic || null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -320,6 +336,7 @@ export default function Home() {
         query,
         mode: mode === 'AUTO' ? undefined : mode,
         sessionId: sessionId,
+        sessionState: sessionState, // Send full session state for serverless persistence
         history: messages.map(m => ({
           role: m.role,
           content: m.content
@@ -337,6 +354,12 @@ export default function Home() {
     if (data.sessionId && data.sessionId !== sessionId) {
       setSessionId(data.sessionId);
       localStorage.setItem('gidboy_session_id', data.sessionId);
+    }
+
+    // Update session state from response (for serverless persistence)
+    if (data.sessionState) {
+      setSessionState(data.sessionState);
+      localStorage.setItem('gidboy_session_state', JSON.stringify(data.sessionState));
     }
 
     // Update active topic from response

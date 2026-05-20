@@ -1,5 +1,33 @@
+# Core API
 fastapi==0.109.0
 uvicorn==0.27.0
 pydantic==2.5.3
+
+# HTTP Client
 requests==2.31.0
+
+# Environment
 python-dotenv==1.0.0
+
+# LangGraph (Agent Orchestration)
+langgraph==0.0.40
+langchain-core==0.1.0
+
+# Vector Database
+chromadb==0.4.18
+
+# NLP (for embeddings)
+sentence-transformers==2.2.2
+
+# Web Scraping (for research)
+crawl4ai==0.3.0
+beautifulsoup4==4.12.2
+playwright==1.40.0
+
+# Database
+sqlalchemy==2.0.23
+psycopg2-binary==2.9.9
+
+# Utilities
+numpy==1.26.2
+tiktoken==0.5.2

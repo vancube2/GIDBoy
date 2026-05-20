@@ -3,14 +3,10 @@
 Persistent workflow state management for collaborative intelligence.
 """
 import os
-import sys
-from fastapi import FastAPI, Header
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import Optional, Dict, Any, List
-
-# Add parent directory to path
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from core.session_manager import session_manager, SessionState
 from core.intent_classifier_v2 import SessionAwareIntentClassifier, IntentType

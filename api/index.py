@@ -25,6 +25,16 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Vercel routes /api/(.*) to api/index.py, so paths include /api/ prefix.
+# Strip it so FastAPI routes match correctly.
+@app.middleware("http")
+async def strip_api_prefix(request, call_next):
+    if request.url.path.startswith("/api/"):
+        request.scope["path"] = request.url.path[4:]  # Remove /api
+    elif request.url.path == "/api":
+        request.scope["path"] = "/"
+    return await call_next(request)
+
 # Initialize components
 from core.collaborative_engine import CollaborativeReasoningEngine
 from llm_client import call_llm_api

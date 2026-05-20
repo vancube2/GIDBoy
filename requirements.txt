@@ -8,7 +8,7 @@ mangum==0.17.0  # ASGI handler for Vercel serverless
 requests==2.32.3
 
 # Environment
-python-dotenv==1.0.0
+python-dotenv==1.0.1
 
 # LangGraph (Agent Orchestration)
 langgraph==0.0.40
